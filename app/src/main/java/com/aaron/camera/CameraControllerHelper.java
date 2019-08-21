@@ -7,7 +7,6 @@ import android.hardware.Camera;
 import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
-import android.view.View;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,8 +29,8 @@ public class CameraControllerHelper implements Camera.PreviewCallback {
     private int rotation;  //屏幕方向
     private int additionalRotation;  //额外的旋转角度（用于适配一些定制设备）
     private boolean isMirror = false;
-    private String flashMode = Camera.Parameters.FLASH_MODE_AUTO;
     private Camera.AutoFocusCallback autoFocusCallback;
+    private Camera.FaceDetectionListener mFaceDetectionListener;
 
     private Integer specificCameraId = null;
     private CameraControllerListener cameraListener;
@@ -45,6 +44,7 @@ public class CameraControllerHelper implements Camera.PreviewCallback {
         previewViewSize = builder.previewViewSize;
         specificPreviewSize = builder.previewSize;
         autoFocusCallback = builder.autoFocusCallback;
+        mFaceDetectionListener = builder.faceDetectionListener;
         if (builder.previewDisplayView instanceof TextureView) {
             isMirror = builder.isMirror;
         } else if (isMirror) {
@@ -53,14 +53,6 @@ public class CameraControllerHelper implements Camera.PreviewCallback {
     }
 
     public void init() {
-        this.previewDisplayView.setSurfaceTextureListener(textureListener);
-
-        if (isMirror) {
-            previewDisplayView.setScaleX(-1);
-        }
-    }
-
-    public void init(TextureView.SurfaceTextureListener textureListener) {
         this.previewDisplayView.setSurfaceTextureListener(textureListener);
 
         if (isMirror) {
@@ -128,6 +120,10 @@ public class CameraControllerHelper implements Camera.PreviewCallback {
                 mCamera.setPreviewTexture((previewDisplayView).getSurfaceTexture());
                 mCamera.setPreviewCallback(this);
                 mCamera.startPreview();
+                if (mFaceDetectionListener != null) {
+                    mCamera.setFaceDetectionListener(mFaceDetectionListener);
+                    mCamera.startFaceDetection();
+                }
                 if (autoFocusCallback != null) {
                     mCamera.autoFocus(autoFocusCallback);
                 }
@@ -208,24 +204,6 @@ public class CameraControllerHelper implements Camera.PreviewCallback {
         }
     }
 
-    public boolean isStopped() {
-        synchronized (this) {
-            return mCamera == null;
-        }
-    }
-
-    public void release() {
-        synchronized (this) {
-            stop();
-            previewDisplayView = null;
-            specificCameraId = null;
-            cameraListener = null;
-            previewViewSize = null;
-            specificPreviewSize = null;
-            previewSize = null;
-        }
-    }
-
     private Camera.Size getBestSupportedSize(List<Camera.Size> sizes, Point previewViewSize) {
         if (sizes == null || sizes.size() == 0) {
             return mCamera.getParameters().getPreviewSize();
@@ -280,21 +258,6 @@ public class CameraControllerHelper implements Camera.PreviewCallback {
         return bestSize;
     }
 
-    public List<Camera.Size> getSupportedPreviewSizes() {
-        if (mCamera == null) {
-            return null;
-        }
-        return mCamera.getParameters().getSupportedPreviewSizes();
-    }
-
-    public List<Camera.Size> getSupportedPictureSizes() {
-        if (mCamera == null) {
-            return null;
-        }
-        return mCamera.getParameters().getSupportedPictureSizes();
-    }
-
-
     @Override
     public void onPreviewFrame(byte[] nv21, Camera camera) {
         if (cameraListener != null) {
@@ -305,7 +268,6 @@ public class CameraControllerHelper implements Camera.PreviewCallback {
     private TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
-//            start();
             setSurfaceTexture(surfaceTexture);
         }
 
@@ -352,64 +314,8 @@ public class CameraControllerHelper implements Camera.PreviewCallback {
         }
     }
 
-    /**
-     * 拍照回调
-     * 对jpeg图像数据的回调,最重要的一个回调
-     */
-    Camera.PictureCallback mJpegPictureCallback = new Camera.PictureCallback() {
-
-        public void onPictureTaken(byte[] data, Camera camera) {
-            cameraListener.onPictureTaken(data, camera);
-//            try {
-//                Thread.sleep(200);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-        }
-    };
-
-    public Camera getCamera() {
-        return mCamera;
-    }
-
-    public int getCameraId() {
-        return mCameraId;
-    }
-
-    public Point getPreviewViewSize() {
-        return previewViewSize;
-    }
-
-    public View getPreviewDisplayView() {
-        return previewDisplayView;
-    }
-
     public Camera.Size getPreviewSize() {
         return previewSize;
-    }
-
-    public Point getSpecificPreviewSize() {
-        return specificPreviewSize;
-    }
-
-    public int getDisplayOrientation() {
-        return displayOrientation;
-    }
-
-    public int getRotation() {
-        return rotation;
-    }
-
-    public int getAdditionalRotation() {
-        return additionalRotation;
-    }
-
-    public boolean isMirror() {
-        return isMirror;
-    }
-
-    public Integer getSpecificCameraId() {
-        return specificCameraId;
     }
 
     /**
@@ -425,43 +331,6 @@ public class CameraControllerHelper implements Camera.PreviewCallback {
             e.printStackTrace();
         }
         return false;
-    }
-
-    /**
-     * 闪光灯关闭
-     */
-    public void offFlash() {
-        if (null != mCamera) {
-            flashMode = Camera.Parameters.FLASH_MODE_OFF;
-            Camera.Parameters params = mCamera.getParameters();
-            params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-            setCameraParameters(params);
-        }
-    }
-
-    /**
-     * 闪光灯开启
-     */
-    public void openFlash() {
-        if (null != mCamera) {
-            flashMode = Camera.Parameters.FLASH_MODE_TORCH;
-            Camera.Parameters params = mCamera.getParameters();
-            //一直开启闪光灯
-            params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-            setCameraParameters(params);
-        }
-    }
-
-    /**
-     * 闪光灯自动
-     */
-    public void autoFlash() {
-        if (null != mCamera) {
-            flashMode = Camera.Parameters.FLASH_MODE_AUTO;
-            Camera.Parameters params = mCamera.getParameters();
-            params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-            setCameraParameters(params);
-        }
     }
 
     public static final class Builder {
@@ -504,6 +373,8 @@ public class CameraControllerHelper implements Camera.PreviewCallback {
          * 自动对焦
          */
         private Camera.AutoFocusCallback autoFocusCallback;
+
+        private Camera.FaceDetectionListener faceDetectionListener;
 
         public Builder() {
         }
@@ -552,6 +423,11 @@ public class CameraControllerHelper implements Camera.PreviewCallback {
 
         public Builder setAutoFocusCallback(Camera.AutoFocusCallback focusCallback) {
             autoFocusCallback = focusCallback;
+            return this;
+        }
+
+        public Builder setFaceDetectionListener(Camera.FaceDetectionListener faceDetectionListener) {
+            this.faceDetectionListener = faceDetectionListener;
             return this;
         }
 

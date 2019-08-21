@@ -77,20 +77,6 @@ object CameraUtils {
         return matrix
     }
 
-    fun getMin(min:Int, current:Int):Int {
-        if (current < min) {
-            return min
-        }
-        return current
-    }
-
-    fun getMax(max:Int, current:Int):Int {
-        if (current > max) {
-            return max
-        }
-
-        return current
-    }
 
     /**
      * 根据相机预览界面获取新的拍照界面大小
@@ -102,13 +88,6 @@ object CameraUtils {
     }
 
     /**
-     * 根据相机预览界面获取新的拍照界面大小
-     */
-    fun updateTextureViewSize(ratio:Float, previewW: Int, previewH: Int): Size {
-        return Size((previewW * ratio).toInt(), (previewH * ratio).toInt())
-    }
-
-    /**
      * 计算需要调整的预览界面比例
      */
     fun updateTextureViewRatio(w:Int, h:Int, previewW:Int, previewH:Int):Float {
@@ -116,19 +95,5 @@ object CameraUtils {
         val ratioH = h * 1.0f / previewH
 
         return if (ratioW > ratioH) ratioH else ratioW
-    }
-
-    /**
-     * 计算需要调整的预览界面比例-宽
-     */
-    fun updateTextureViewRatioW(w:Int, previewW:Int):Float {
-        return w * 1.0f / previewW
-    }
-
-    /**
-     * 计算需要调整的预览界面比例-高
-     */
-    fun updateTextureViewRatioH(h:Int, previewH:Int):Float {
-        return h * 1.0f / previewH
     }
 }

@@ -11,6 +11,7 @@ import com.aaron.camera.CameraControllerListener
 import com.aaron.facecamera.R
 import com.aaron.fragment.BaseFragment
 import com.aaron.utils.CameraUtils
+import com.aaron.utils.DrawFaceHelper
 import com.aaron.utils.ToastUtils
 import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.fm_camera_face.*
@@ -119,22 +120,8 @@ open class CameraFaceFm : BaseFragment(),
 
     override fun loadView(view: View) {
         isStartFaceInfo = false
-        hint_head_layout.visibility = if (isAdminLogin) View.GONE else View.VISIBLE
 
         initViewParams()
-
-        showView()
-    }
-
-    private fun showView() {
-        face_toolBar_layout.visibility = View.VISIBLE
-        main_toolbar_layout.visibility = View.VISIBLE
-        hint_head_layout.visibility = View.VISIBLE
-        face_bottom_layout.visibility = View.VISIBLE
-
-        main_toolbar_layout.visibility = View.GONE
-        main_item_layout.visibility = View.GONE
-        settings_iv.visibility = View.GONE
     }
 
     override fun loadData(savedInstanceState: Bundle?) {
@@ -155,13 +142,34 @@ open class CameraFaceFm : BaseFragment(),
                             .isMirror(isMirror())
                             .previewOn(camera_surfaceview)
                             .cameraListener(this@CameraFaceFm)
+                            .setFaceDetectionListener(object : Camera.FaceDetectionListener {
+                                override fun onFaceDetection(p0: Array<out Camera.Face>?, p1: Camera?) {
+                                    showFaceView.setIsBack(true)
+                                    showFaceView.setFaces(p0)
+                                    //根据不同摄像头调整
+                                    showFaceView.setRotateDegree(90)
+                                    if (faceRectView != null) {
+                                        faceRectView.clearFaceInfo()
+                                        faceRectView.addFaceInfo(p0!!.toList())
+                                    }
+                                }
+                            })
                             .build()
+                    DrawFaceHelper.cameraWidth = camera_surfaceview.measuredWidth.toFloat()
+                    DrawFaceHelper.cameraHeight = camera_surfaceview.measuredHeight.toFloat()
                     cameraHelper.init()
                     cameraHelper.start()
                 }
             }
 
         })
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (::cameraHelper.isInitialized) {
+            cameraHelper.stop()
+        }
     }
 
     /**
@@ -188,7 +196,7 @@ open class CameraFaceFm : BaseFragment(),
      * 是否镜像像是
      */
     private fun isMirror(): Boolean {
-        return true
+        return false
     }
 
     /**
