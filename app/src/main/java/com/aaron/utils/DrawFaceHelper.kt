@@ -40,6 +40,7 @@ object DrawFaceHelper {
 
     //遮罩层透明度
     private const val maskAlpha = 150
+    var isBackCameraId = true
 
     var cameraWidth = 0f
     var cameraHeight = 0f
@@ -54,8 +55,10 @@ object DrawFaceHelper {
      */
     fun drawFaceRect(canvas: Canvas?, drawInfo: Rect?, color: Int, faceRectThickness: Int) {
 
+        var displayOrientation: Int = if (isBackCameraId) { 90 } else { 270 }
+
         //将返回的人脸信息，转为view可识别的信息
-        val matrix = CameraUtils.prepareMatrix(true, 90, cameraWidth.toInt(), cameraHeight.toInt())
+        val matrix = CameraUtils.prepareMatrix(isBackCameraId, displayOrientation, cameraWidth.toInt(), cameraHeight.toInt())
         val rectF = RectF(drawInfo)
         matrix.mapRect(rectF)
 

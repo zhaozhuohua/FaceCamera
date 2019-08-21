@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.ViewTreeObserver
+import android.view.animation.Animation
+import android.view.animation.RotateAnimation
 import com.aaron.camera.CameraControllerHelper
 import com.aaron.camera.CameraControllerListener
 import com.aaron.facecamera.R
@@ -155,6 +157,7 @@ open class CameraFaceFm : BaseFragment(),
                             .build()
                     DrawFaceHelper.cameraWidth = camera_surfaceview.measuredWidth.toFloat()
                     DrawFaceHelper.cameraHeight = camera_surfaceview.measuredHeight.toFloat()
+                    DrawFaceHelper.isBackCameraId = isBackCameraId()
                     cameraHelper.init()
                     cameraHelper.start()
                 }
@@ -163,21 +166,35 @@ open class CameraFaceFm : BaseFragment(),
         })
 
         switchId.setOnClickListener {
+            startSwitchAdmin()
             switchId.isEnabled = false
             handler.postDelayed({
                 switchId.isEnabled = true
             }, 2000)
-            if (cameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                cameraId = Camera.CameraInfo.CAMERA_FACING_BACK
-                switchId.setBackgroundResource(R.mipmap.ic_b_round)
+            cameraId = if (cameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                Camera.CameraInfo.CAMERA_FACING_BACK
             } else {
-                cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT
-                switchId.setBackgroundResource(R.mipmap.ic_f_round)
+                Camera.CameraInfo.CAMERA_FACING_FRONT
             }
+            DrawFaceHelper.isBackCameraId = isBackCameraId()
+            faceRectView.clearFaceInfo()
             cameraHelper.setSpecificCameraId(cameraId)
             cameraHelper.stop()
             cameraHelper.start()
         }
+    }
+
+    private fun isBackCameraId():Boolean {
+        return  cameraId == Camera.CameraInfo.CAMERA_FACING_BACK
+    }
+
+    private fun startSwitchAdmin() {
+        val rotateAnimation = RotateAnimation(0F, 360F, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5F)
+        rotateAnimation.fillAfter = false
+        rotateAnimation.fillBefore = true
+        rotateAnimation.isFillEnabled = true
+        rotateAnimation.duration = 1000
+        switchId.startAnimation(rotateAnimation)
     }
 
     override fun onPause() {
