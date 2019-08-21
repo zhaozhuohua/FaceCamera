@@ -52,6 +52,10 @@ public class CameraControllerHelper implements Camera.PreviewCallback {
         }
     }
 
+    public void setSpecificCameraId(int id) {
+        specificCameraId = id;
+    }
+
     public void init() {
         this.previewDisplayView.setSurfaceTextureListener(textureListener);
 
@@ -65,11 +69,12 @@ public class CameraControllerHelper implements Camera.PreviewCallback {
             if (mCamera != null) {
                 return;
             }
-            //相机数量为2则打开1,1则打开0,相机ID 1为前置，0为后置
-            mCameraId = Camera.getNumberOfCameras() - 1;
             //若指定了相机ID且该相机存在，则打开指定的相机
-            if (specificCameraId != null && specificCameraId <= mCameraId) {
+            if (specificCameraId != null ) {
                 mCameraId = specificCameraId;
+            } else {
+                //相机数量为2则打开1,1则打开0,相机ID 1为前置，0为后置
+                mCameraId = Camera.getNumberOfCameras() - 1;
             }
 
             //没有相机

@@ -54,9 +54,10 @@ object DrawFaceHelper {
      */
     fun drawFaceRect(canvas: Canvas?, drawInfo: Rect?, color: Int, faceRectThickness: Int) {
 
+        //将返回的人脸信息，转为view可识别的信息
         val matrix = CameraUtils.prepareMatrix(true, 90, cameraWidth.toInt(), cameraHeight.toInt())
-        val mRect = RectF(drawInfo)
-        matrix.mapRect(mRect)
+        val rectF = RectF(drawInfo)
+        matrix.mapRect(rectF)
 
         if (canvas == null || drawInfo == null) {
             return
@@ -68,7 +69,8 @@ object DrawFaceHelper {
         paint.style = Paint.Style.STROKE  //设置空心
         paint.strokeWidth = faceRectThickness.toFloat()
 
-        val rect = Rect(mRect.left.toInt(), mRect.top.toInt(), mRect.right.toInt(), mRect.bottom.toInt())
+        val spic = 100
+        val rect = Rect(rectF.left.toInt() - spic, rectF.top.toInt() - spic, rectF.right.toInt() + spic, rectF.bottom.toInt() + spic)
 
         val width = rect.right - rect.left
         val height = rect.bottom - rect.top

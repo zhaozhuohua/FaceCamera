@@ -7,14 +7,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <com.aaron.view.ShowFaceView
-        android:id="@+id/showFaceView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"/>
     <com.aaron.view.FaceRectView
         android:id="@+id/faceRectView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <TextView
+        android:id="@+id/switchId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/ic_b_round"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"/>
 
 </RelativeLayout>

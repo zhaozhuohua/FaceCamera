@@ -4,6 +4,7 @@ import android.graphics.Point
 import android.graphics.Rect
 import android.hardware.Camera
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.view.ViewTreeObserver
 import com.aaron.camera.CameraControllerHelper
@@ -61,7 +62,6 @@ open class CameraFaceFm : BaseFragment(),
     }
 
     override fun onCameraClosed() {
-        Logger.i("BaseCameraFm onCameraClosed")
         stopScanFace()
     }
 
@@ -91,7 +91,7 @@ open class CameraFaceFm : BaseFragment(),
         return R.layout.fm_camera_face
     }
 
-    var previewRate = 1.33f
+    var cameraId = Camera.CameraInfo.CAMERA_FACING_BACK
 
     private lateinit var centerCoordinate: Point  //相机预览界面中心点位置
 
@@ -102,6 +102,7 @@ open class CameraFaceFm : BaseFragment(),
 
     private var isStopScanFace = false  //停止扫描人脸
     private var mExecutor: ExecutorService? = null  //处理人脸识别检测线程池
+    private lateinit var handler:Handler
 
     /**
      * 是否打开前置摄像头
@@ -116,6 +117,7 @@ open class CameraFaceFm : BaseFragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         centerCoordinate = Point()
+        handler = Handler()
     }
 
     override fun loadView(view: View) {
@@ -138,16 +140,12 @@ open class CameraFaceFm : BaseFragment(),
                     cameraHelper = CameraControllerHelper.Builder()
                             .previewViewSize(Point(camera_surfaceview.measuredWidth, camera_surfaceview.measuredHeight))
                             .rotation(mBaseAc.windowManager.defaultDisplay.rotation)
-                            .specificCameraId(getCameraId())
+                            .specificCameraId(cameraId)
                             .isMirror(isMirror())
                             .previewOn(camera_surfaceview)
                             .cameraListener(this@CameraFaceFm)
                             .setFaceDetectionListener(object : Camera.FaceDetectionListener {
                                 override fun onFaceDetection(p0: Array<out Camera.Face>?, p1: Camera?) {
-                                    showFaceView.setIsBack(true)
-                                    showFaceView.setFaces(p0)
-                                    //根据不同摄像头调整
-                                    showFaceView.setRotateDegree(90)
                                     if (faceRectView != null) {
                                         faceRectView.clearFaceInfo()
                                         faceRectView.addFaceInfo(p0!!.toList())
@@ -163,6 +161,23 @@ open class CameraFaceFm : BaseFragment(),
             }
 
         })
+
+        switchId.setOnClickListener {
+            switchId.isEnabled = false
+            handler.postDelayed({
+                switchId.isEnabled = true
+            }, 2000)
+            if (cameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                cameraId = Camera.CameraInfo.CAMERA_FACING_BACK
+                switchId.setBackgroundResource(R.mipmap.ic_b_round)
+            } else {
+                cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT
+                switchId.setBackgroundResource(R.mipmap.ic_f_round)
+            }
+            cameraHelper.setSpecificCameraId(cameraId)
+            cameraHelper.stop()
+            cameraHelper.start()
+        }
     }
 
     override fun onPause() {
@@ -197,13 +212,6 @@ open class CameraFaceFm : BaseFragment(),
      */
     private fun isMirror(): Boolean {
         return false
-    }
-
-    /**
-     * 获取相机id
-     */
-    private fun getCameraId(): Int {
-        return Camera.CameraInfo.CAMERA_FACING_BACK
     }
 
     override fun onResume() {
