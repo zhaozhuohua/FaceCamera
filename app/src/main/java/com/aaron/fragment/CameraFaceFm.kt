@@ -44,8 +44,8 @@ open class CameraFaceFm : BaseFragment(),
         //重新设置的预览界面和相机预览界面比例
         previewRatio = CameraUtils.updateTextureViewRatio(
                 camera_surfaceview.width,
-                camera_surfaceview.height, cameraHelper.previewSize.width,
-                cameraHelper.previewSize.height
+                camera_surfaceview.height, cameraHelper.previewSize!!.width,
+                cameraHelper.previewSize!!.height
         )
 
         //设置相机预览界面中心点位置

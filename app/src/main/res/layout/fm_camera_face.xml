@@ -2,7 +2,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <com.aaron.camera.CameraSurfaceView
+    <com.aaron.view.CameraSurfaceView
         android:id="@+id/camera_surfaceview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
