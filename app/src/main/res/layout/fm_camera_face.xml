@@ -10,6 +10,12 @@
     <com.aaron.view.FaceRectView
         android:id="@+id/faceRectView"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+    <com.aaron.view.ShowFaceView
+        android:id="@+id/showFaceView"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
     <TextView

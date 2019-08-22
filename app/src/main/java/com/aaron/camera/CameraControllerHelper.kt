@@ -13,7 +13,7 @@ import java.util.*
 /**
  * 相机辅助类
  */
-class CameraControllerHelper private constructor(builder: CameraControllerHelper.Builder) : Camera.PreviewCallback {
+class CameraControllerHelper private constructor(builder: Builder) : Camera.PreviewCallback {
     private var mCamera: Camera? = null
     private var mCameraId: Int = 0
     private val previewViewSize: Point?

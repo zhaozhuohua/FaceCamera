@@ -54,23 +54,20 @@ object CameraUtils {
     }
 
     /**
-     * 准备用于旋转的矩阵工具
+     * 准备用于转换的矩阵工具
      *
-     * @param matrix
-     * @param isBackCamera
-     * @param displayOrientation
-     * @param viewWidth
-     * @param viewHeight
+     * @param isBackCamera  是否后置相机
+     * @param displayOrientation  摄像头设置的角度
+     * @param viewWidth  预览界面宽
+     * @param viewHeight  预览界面高
      */
     fun prepareMatrix(isBackCamera: Boolean, displayOrientation: Int,
                       viewWidth: Int, viewHeight: Int): Matrix {
         val matrix = Matrix()
-        //可以调节绿框位置镜像关系
+        //前置摄像头处理镜像关系
         matrix.setScale(1f, (if (!isBackCamera) -1 else 1).toFloat())
-        // This mIsBackCamera the value for android.hardware.Camera.setDisplayOrientation.
+        //摄像头的角度
         matrix.postRotate(displayOrientation.toFloat())
-        // Camera driver coordinates range from (-1000, -1000) to (1000, 1000).
-        // UI coordinates range from (0, 0) to (width, height).
         matrix.postScale(viewWidth / 2000f, viewHeight / 2000f)
         matrix.postTranslate(viewWidth / 2f, viewHeight / 2f)
 

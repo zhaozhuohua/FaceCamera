@@ -84,11 +84,13 @@ open class CameraFaceFm : BaseFragment(),
                             .isMirror(isMirror())
                             .previewOn(camera_surfaceview)
                             .cameraListener(this@CameraFaceFm)
+                            //设置人脸检测回调方法
                             .setFaceDetectionListener(object : Camera.FaceDetectionListener {
                                 override fun onFaceDetection(p0: Array<out Camera.Face>?, p1: Camera?) {
                                     if (faceRectView != null) {
                                         faceRectView.clearFaceInfo()
                                         faceRectView.addFaceInfo(p0!!.toList())
+//                                        showFaceView.setFaces(p0 as Array<Camera.Face>?)
                                     }
                                 }
                             })
@@ -97,6 +99,9 @@ open class CameraFaceFm : BaseFragment(),
                     DrawFaceHelper.cameraWidth = p.x.toFloat()
                     DrawFaceHelper.cameraHeight = p.y.toFloat()
                     DrawFaceHelper.isBackCameraId = isBackCameraId()
+
+//                    showFaceView.setIsBack(isBackCameraId())
+
                     cameraHelper.init()
                     cameraHelper.start()
                 }
@@ -116,6 +121,7 @@ open class CameraFaceFm : BaseFragment(),
                 Camera.CameraInfo.CAMERA_FACING_FRONT
             }
             DrawFaceHelper.isBackCameraId = isBackCameraId()
+            showFaceView.setIsBack(isBackCameraId())
             faceRectView.clearFaceInfo()
             cameraHelper.setSpecificCameraId(cameraId)
             cameraHelper.stop()
