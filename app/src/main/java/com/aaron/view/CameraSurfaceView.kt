@@ -39,29 +39,6 @@ class CameraSurfaceView(internal var mContext: Context, attrs: AttributeSet) : A
      * @param camera
      */
     override fun onPreviewFrame(bytes: ByteArray, camera: Camera) {
-        //        if(number<FACENUM){
-        //            //收集
-        //            //判断监听器 开始
-        //            if(onFaceCollectListener!=null){
-        //                onFaceCollectListener.OnFaceCollectStart(true);
-        //                //有byte数组转为bitmap
-        //                bitmaps[number] = cameraByte2bitmap(bytes,camera);
-        //                Log.d(TAG,"********收集了"+number+"个************");
-        //                number = number+1;
-        //                if(number==5){
-        //                    Log.d(TAG,"********收集够5个************");
-        //                    //提交
-        //                    onFaceCollectListener.OnFaceCollected(bitmaps);
-        //
-        //                    //此处添加一个循环检测
-        ////                    onFaceCollectListener.OnFaceCollectStart(true);
-        ////                    number = 0;
-        //                }
-        //            }
-        //        }else {
-        //            //不做操作
-        //            onFaceCollectListener.OnFaceCollectStart(false);
-        //        }
     }
 
     companion object {

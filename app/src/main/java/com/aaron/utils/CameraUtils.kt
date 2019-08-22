@@ -9,7 +9,7 @@ import android.view.Surface
 import android.view.WindowManager
 
 /**
- * Created by Aaron on 2019/6/5.
+ * Created by Aaron on 2019/8/21.
  */
 object CameraUtils {
 

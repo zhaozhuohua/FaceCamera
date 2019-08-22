@@ -11,6 +11,10 @@ import android.view.View
 import com.aaron.utils.DrawFaceHelper
 import java.util.concurrent.CopyOnWriteArrayList
 
+/**
+ * Created by Aaron on 2019/8/22.
+ * 人脸识别动效界面
+ */
 class FaceRectView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
 
     private val faceRectList = CopyOnWriteArrayList<Camera.Face>()

@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         //事务是不能共享的，每次用到都要重新开启一个事务，之后提交
         val fragmentTransaction = mFragmentManager.beginTransaction()
         //参数：1.父容器   2.要替换的fragment。
-        fragmentTransaction.replace(R.id.fragment_layout, CameraFaceFm.newInstance(1))
+        fragmentTransaction.replace(R.id.fragment_layout, CameraFaceFm.newInstance())
         //提交事务
         fragmentTransaction.commit()
     }
