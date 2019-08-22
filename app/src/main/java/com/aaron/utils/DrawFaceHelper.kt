@@ -100,7 +100,7 @@ object DrawFaceHelper {
         paint.flags = Paint.ANTI_ALIAS_FLAG  //抗锯齿
         paint.color = color
 
-        //设置正方形，一遍下面设置弧形为圆的弧形
+        //设置正方形，以便下面设置弧形为圆的弧形
         rect.left = cx - radius
         rect.top = cy - radius
         rect.right = cx + radius

@@ -1,21 +1,24 @@
 package com.cvr.fswitcher.fragment
 
+import android.content.Context
 import android.graphics.Point
 import android.hardware.Camera
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.ViewTreeObserver
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
 import com.aaron.camera.CameraControllerHelper
 import com.aaron.camera.CameraControllerListener
-import com.aaron.facecamera.R
 import com.aaron.fragment.BaseFragment
 import com.aaron.utils.DrawFaceHelper
 import com.aaron.utils.ToastUtils
 import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.fm_camera_face.*
+
+
 
 /**
  * Created by Aaron on 2019/8/22.
@@ -47,7 +50,7 @@ open class CameraFaceFm : BaseFragment(),
     }
 
     override fun getRootLayoutId(): Int {
-        return R.layout.fm_camera_face
+        return com.aaron.facecamera.R.layout.fm_camera_face
     }
 
     var cameraId = Camera.CameraInfo.CAMERA_FACING_BACK
@@ -90,8 +93,9 @@ open class CameraFaceFm : BaseFragment(),
                                 }
                             })
                             .build()
-                    DrawFaceHelper.cameraWidth = camera_surfaceview.measuredWidth.toFloat()
-                    DrawFaceHelper.cameraHeight = camera_surfaceview.measuredHeight.toFloat()
+                    val p = getScreenPoint()
+                    DrawFaceHelper.cameraWidth = p.x.toFloat()
+                    DrawFaceHelper.cameraHeight = p.y.toFloat()
                     DrawFaceHelper.isBackCameraId = isBackCameraId()
                     cameraHelper.init()
                     cameraHelper.start()
@@ -171,5 +175,12 @@ open class CameraFaceFm : BaseFragment(),
         fun newInstance(): CameraFaceFm {
             return CameraFaceFm()
         }
+    }
+
+    fun getScreenPoint():Point {
+        val outSize = Point()
+        val wm = context!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        wm.defaultDisplay.getRealSize(outSize)
+        return outSize
     }
 }
